@@ -9,7 +9,7 @@ A simple sphinx extension to generate a UML diagram from python modules.
 Install
 --------
 
-Install should work with with:::
+Install should work with: ::
 
     pip install https://github.com/patou01/sphinx-pyreverse
 
@@ -19,7 +19,7 @@ Usage
 Add "sphinx_pyreverse" to the extensions list in your conf.py (make sure it is
 in the PYTHONPATH).
 
-Call the directive with path to python module as content.:::
+Call the directive with path to python module as content.
 
     .. uml:: my_module
         :classes: MyClass
@@ -29,7 +29,7 @@ Requires pyreverse from pylint.
 Arguments
 ^^^^^^^^^
 
-It should support the standard arguments from pyreverse, but I honestly haven't tested. For instance you can do:::
+It should support the standard arguments from pyreverse, but I honestly haven't tested. For instance you can do: ::
 
     .. uml:: my_module
         :classes: MyClass
