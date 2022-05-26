@@ -1,20 +1,17 @@
 Sphinx-pyreverse
 =================
 
-.. image:: https://circleci.com/gh/alendit/sphinx-pyreverse.svg?style=svg
-    :target: https://circleci.com/gh/alendit/sphinx-pyreverse
-
-.. image:: https://badge.fury.io/py/sphinx-pyreverse.svg
-    :target: https://badge.fury.io/py/sphinx-pyreverse
+**Note: This is not what you will get by doing pip install sphinx-pyreverse.** This has been forked. And for now there
+are no plans of merging back.
 
 A simple sphinx extension to generate a UML diagram from python modules.
 
 Install
 --------
 
-Install with:::
+Install should work with with:::
 
-    pip install sphinx-pyreverse
+    pip install https://github.com/patou01/sphinx-pyreverse
 
 Usage
 ------
@@ -22,19 +19,28 @@ Usage
 Add "sphinx_pyreverse" to the extensions list in your conf.py (make sure it is
 in the PYTHONPATH).
 
-Call the directive with path to python module as content. The ``:classes:`` and
-``:packages:`` flags specify which UML diagrams to show.::
+Call the directive with path to python module as content.:::
 
-    .. uml:: {{modulename}}
-        :classes:
-        :packages:
+    .. uml:: my_module
+        :classes: MyClass
 
 Requires pyreverse from pylint.
+
+Arguments
+^^^^^^^^^
+
+It should support the standard arguments from pyreverse, but I honestly haven't tested. For instance you can do:::
+
+    .. uml:: my_module
+        :classes: MyClass
+        :all-ancestors:
+
+And that should run and give you what you're after...
 
 Options
 ^^^^^^^
 
-To configure usage, in your conf.py
+You can write default config to `conf.py`, if an override is found in the arguments, that one will have precedence.
 
 * ``sphinx_pyreverse_output`` (see --output), default is "png"
 * ``sphinx_pyreverse_filter_mode`` (see --filter_mode), default is None

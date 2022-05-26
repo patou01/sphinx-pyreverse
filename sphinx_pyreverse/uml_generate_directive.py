@@ -159,11 +159,20 @@ class UMLGenerateDirective(Directive):
             self.generated_modules.append(module_name)
 
         res = []
-        for arg in self.arguments[2:]:
-            img_name = arg.strip(":")
-            res.append(
-                self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
-            )
+        if "--class" in self.command_args:
+            # need to split on " " because the command has already been changed from arg[key] = ["A", "B"]
+            # to arg[key] = "A B"
+            for img_name in self.command_args["--class"].split(" "):
+                res.append(
+                    self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
+                )
+        else:
+            # whatever this was doing...
+            for arg in self.arguments[2:]:
+                img_name = arg.strip(":")
+                res.append(
+                    self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
+                )
 
         return res
 
