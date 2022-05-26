@@ -12,3 +12,4 @@ coverage/
 *env/
 dist_backups/
 dist/
+.idea/

@@ -47,17 +47,45 @@ class UMLGenerateDirective(Directive):
     # a list of modules which have been parsed by pyreverse
     generated_modules = []
 
-    def _validate(self):
-        """Validates that the RST parameters are valid"""
-        valid_flags = {":classes:", ":packages:"}
-        unkown_arguments = set(self.arguments[1:]) - valid_flags
-        if unkown_arguments:
+    def _add_local_arguments(self):
+        """overwrites arguments from command if necessary"""
+        valid_flags = [":classes:", ":packages:"]
+        if self.arguments[1] not in valid_flags:
             raise ValueError(
                 (
                     f"invalid flags encountered: {unkown_arguments}. "
                     f"Must be one of {valid_flags}"
                 )
             )
+
+        self.type = self.arguments[1]
+        if self.type == ":classes:":
+            self.command_args["--class"] = " ".join(self.arguments[2:])
+
+        breakpoint()
+
+    def _get_command_args_from_config(self, config):
+        self.command_args = {}
+        if config.sphinx_pyreverse_filter_mode:
+            self.command_args["--filter-mode"] = config.sphinx_pyreverse_filter_mode
+        if config.sphinx_pyreverse_class:
+            self.command_args["--class"] = config.sphinx_pyreverse_class
+        if config.sphinx_pyreverse_show_ancestors:
+            self.command_args["--show-ancestors"] = config.sphinx_pyreverse_show_ancestors
+        if config.sphinx_pyreverse_all_ancestors:
+            self.command_args["--all-ancestors"] = True
+        if config.sphinx_pyreverse_show_associated:
+            self.command_args["--show-associated"] = config.sphinx_pyreverse_show_associated
+        if config.sphinx_pyreverse_all_associated:
+            self.command_args["--all-associated"] = True
+        if config.sphinx_pyreverse_show_builtin:
+            self.command_args["--show-builtin"] = True
+        if config.sphinx_pyreverse_module_names:
+            self.command_args["--module-names"] = config.sphinx_pyreverse_module_names
+        if config.sphinx_pyreverse_only_classnames:
+            self.command_args["--only-classnames"] = True
+        if config.sphinx_pyreverse_ignore:
+            self.command_args["--ignore"] = config.sphinx_pyreverse_ignore
 
     def _build_command(self, module_name, config):  # noqa: C901 func too-complex
         cmd = [
@@ -67,30 +95,17 @@ class UMLGenerateDirective(Directive):
             "--project",
             module_name,
         ]
-        if config.sphinx_pyreverse_filter_mode:
-            assert config.sphinx_pyreverse_filter_mode
-            cmd.extend(("--filter-mode", config.sphinx_pyreverse_filter_mode))
-        if config.sphinx_pyreverse_class:
-            cmd.extend(("--class", config.sphinx_pyreverse_class))
-        if config.sphinx_pyreverse_show_ancestors:
-            cmd.extend(("--show-ancestors", config.sphinx_pyreverse_show_ancestors))
-        if config.sphinx_pyreverse_all_ancestors:
-            cmd.append("--all-ancestors")
-        if config.sphinx_pyreverse_show_associated:
-            cmd.extend(("--show-associated", config.sphinx_pyreverse_show_associated))
-        if config.sphinx_pyreverse_all_associated:
-            cmd.append("--all-associated")
-        if config.sphinx_pyreverse_show_builtin:
-            cmd.append("--show-builtin")
-        if config.sphinx_pyreverse_module_names:
-            cmd.extend(("--module-names", config.sphinx_pyreverse_module_names))
-        if config.sphinx_pyreverse_only_classnames:
-            cmd.append("--only-classnames")
-        if config.sphinx_pyreverse_ignore:
-            cmd.extend(("--ignore", config.sphinx_pyreverse_ignore))
+
+        for key in self.command_args:
+            if key in ["--all-ancestors", "--all-associated", "--show-builtin", "--only-classnames"]:
+                cmd.append(key)
+            else:
+
+                cmd.extend([key, self.command_args[key]])
 
         # finally append the module to generate the uml for
         cmd.append(module_name)
+        breakpoint()
         return cmd
 
     def run(self):
@@ -108,7 +123,9 @@ class UMLGenerateDirective(Directive):
         env.uml_dir = uml_dir
         module_name = self.arguments[0]
 
-        self._validate()
+        self._get_command_args_from_config(env.config)
+
+        self._add_local_arguments()
 
         if module_name not in self.generated_modules:
             cmd = self._build_command(module_name, env.config)
@@ -116,6 +133,7 @@ class UMLGenerateDirective(Directive):
                 f"sphinx-pyreverse: Running: {' '.join(cmd)}"
             )
 
+            breakpoint()
             # Ensure we have the right paths available to the pyreverse subproc
             if "PYTHONPATH" in os.environ:
                 sub_proc_env = copy.deepcopy(os.environ)
@@ -139,7 +157,7 @@ class UMLGenerateDirective(Directive):
             self.generated_modules.append(module_name)
 
         res = []
-        for arg in self.arguments[1:]:
+        for arg in self.arguments[2:]:
             img_name = arg.strip(":")
             res.append(
                 self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
@@ -148,13 +166,15 @@ class UMLGenerateDirective(Directive):
         return res
 
     def get_paths(self, img_name, module_name, base_dir, src_dir, config):
-        path_from_base = os.path.join(self.DIR_NAME, "{1}_{0}.{2}").format(
-            module_name, img_name, config.sphinx_pyreverse_output
-        )
+        # path_from_base = os.path.join(self.DIR_NAME, "{1}_{0}.{2}").format(
+        #     module_name, img_name, config.sphinx_pyreverse_output
+        # )
+        path_from_base = os.path.join(self.DIR_NAME, f"{img_name}.{config.sphinx_pyreverse_output}")
         # use relpath to get sub-directory of the main 'source' location
         src_base = os.path.relpath(base_dir, start=src_dir)
         uri = directives.uri(os.path.join(src_base, path_from_base))
         output_file = os.path.join(base_dir, path_from_base)
+        breakpoint()
         return (uri, output_file)
 
     def generate_img(self, img_name, module_name, base_dir, src_dir, config):
