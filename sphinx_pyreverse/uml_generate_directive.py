@@ -41,7 +41,7 @@ class UMLGenerateDirective(Directive):
     """UML directive to generate a pyreverse diagram"""
 
     required_arguments = 1
-    optional_arguments = 2
+    optional_arguments = 8
     has_content = False
     DIR_NAME = "uml_images"
     # a list of modules which have been parsed by pyreverse
@@ -49,20 +49,24 @@ class UMLGenerateDirective(Directive):
 
     def _add_local_arguments(self):
         """overwrites arguments from command if necessary"""
-        valid_flags = [":classes:", ":packages:"]
-        if self.arguments[1] not in valid_flags:
-            raise ValueError(
-                (
-                    f"invalid flags encountered: {unkown_arguments}. "
-                    f"Must be one of {valid_flags}"
-                )
-            )
+        cmd_name = ""
+        for arg in self.arguments[1:]:
+            if arg.startswith(":") and arg.endswith(":"):
+                name = arg.replace(":", "")
+                cmd_name = self._rst_to_cmd_arg(name)
+                self.command_args[cmd_name] = []
+            else:
+                self.command_args[cmd_name].append(arg)
 
-        self.type = self.arguments[1]
-        if self.type == ":classes:":
-            self.command_args["--class"] = " ".join(self.arguments[2:])
+        for key, val in self.command_args.items():
+            if val:
+                self.command_args[key] = " ".join(val)
 
-        breakpoint()
+    def _rst_to_cmd_arg(self, name):
+        if name == "classes":
+            return "--class"
+        else:
+            return f"--{name}"
 
     def _get_command_args_from_config(self, config):
         self.command_args = {}
@@ -100,12 +104,11 @@ class UMLGenerateDirective(Directive):
             if key in ["--all-ancestors", "--all-associated", "--show-builtin", "--only-classnames"]:
                 cmd.append(key)
             else:
-
                 cmd.extend([key, self.command_args[key]])
 
         # finally append the module to generate the uml for
         cmd.append(module_name)
-        breakpoint()
+
         return cmd
 
     def run(self):
@@ -133,7 +136,6 @@ class UMLGenerateDirective(Directive):
                 f"sphinx-pyreverse: Running: {' '.join(cmd)}"
             )
 
-            breakpoint()
             # Ensure we have the right paths available to the pyreverse subproc
             if "PYTHONPATH" in os.environ:
                 sub_proc_env = copy.deepcopy(os.environ)
@@ -166,20 +168,17 @@ class UMLGenerateDirective(Directive):
         return res
 
     def get_paths(self, img_name, module_name, base_dir, src_dir, config):
-        # path_from_base = os.path.join(self.DIR_NAME, "{1}_{0}.{2}").format(
-        #     module_name, img_name, config.sphinx_pyreverse_output
-        # )
         path_from_base = os.path.join(self.DIR_NAME, f"{img_name}.{config.sphinx_pyreverse_output}")
         # use relpath to get sub-directory of the main 'source' location
         src_base = os.path.relpath(base_dir, start=src_dir)
         uri = directives.uri(os.path.join(src_base, path_from_base))
         output_file = os.path.join(base_dir, path_from_base)
-        breakpoint()
-        return (uri, output_file)
+
+        return uri, output_file
 
     def generate_img(self, img_name, module_name, base_dir, src_dir, config):
         """Resizes the image and returns a Sphinx image"""
-        (uri, output_file) = self.get_paths(
+        uri, output_file = self.get_paths(
             img_name, module_name, base_dir, src_dir, config
         )
         scale = 100
