@@ -19,7 +19,7 @@ Usage
 Add "sphinx_pyreverse" to the extensions list in your conf.py (make sure it is
 in the PYTHONPATH).
 
-Call the directive with path to python module as content.
+Call the directive with path to python module as content. ::
 
     .. uml:: my_module
         :classes: MyClass
