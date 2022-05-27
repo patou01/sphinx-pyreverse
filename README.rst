@@ -42,8 +42,8 @@ It should support the standard arguments from pyreverse, but I honestly haven't 
 
 And that should run and give you what you're after...
 
-**Note: depending on your basic config, it will not override nor detect conflict situations. For instance if you put
-``all-ancestors`` in the default and then add ``show-ancestors`` in the call to uml, you will get a command containing both**
+**Note: depending on your basic config, it will not override nor detect conflict situations. For instance if you put**
+``all-ancestors`` **in the default and then add** ``show-ancestors`` **in the call to uml, you will get a command containing both**
 
 Options
 ^^^^^^^
