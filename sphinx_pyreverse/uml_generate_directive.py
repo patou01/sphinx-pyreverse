@@ -72,8 +72,6 @@ class UMLGenerateDirective(Directive):
         self.command_args = {}
         if config.sphinx_pyreverse_filter_mode:
             self.command_args["--filter-mode"] = config.sphinx_pyreverse_filter_mode
-        if config.sphinx_pyreverse_class:
-            self.command_args["--class"] = config.sphinx_pyreverse_class
         if config.sphinx_pyreverse_show_ancestors:
             self.command_args["--show-ancestors"] = config.sphinx_pyreverse_show_ancestors
         if config.sphinx_pyreverse_all_ancestors:
