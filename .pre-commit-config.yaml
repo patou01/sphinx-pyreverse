@@ -1,0 +1,60 @@
+repos:
+- repo: https://github.com/psf/black
+  rev: "22.3.0"
+  hooks:
+  - id: black
+    args : [--line-length=110]
+
+- repo: https://github.com/PyCQA/flake8
+  rev: 4.0.1
+  hooks:
+      - id: flake8
+        args: [--max-line-length=110, --exclude=venv]
+
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.7.4
+  hooks:
+    - id: bandit
+      args: ["--exclude", "/test"]
+
+- repo: https://github.com/timothycrosley/isort
+  rev: 5.7.0
+  hooks:
+  - id: isort
+    args: ["--profile", "black"]
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.2.0
+  hooks:
+  - id: trailing-whitespace
+  - id: check-added-large-files
+    args: ['--maxkb=1024']
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: no-commit-to-branch
+  - id: check-docstring-first
+  - id: debug-statements
+
+- repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+  rev: v1.2.4  # Use the ref you want to point at
+  hooks:
+  - id: python-safety-dependencies-check
+
+- repo: local
+  hooks:
+  - id: pylint
+    name: pylint
+    entry: pylint
+    language: system
+    types: [python]
+    args:
+      [
+        "-rn", # Only display messages
+        "--ignore=setup.py",
+        "--max-line-length=110",
+        "--good-names=d,i,n,p,ui,up",
+        "--fail-under=9",
+        "--disable=logging-fstring-interpolation,locally-disabled,too-many-instance-attributes",
+        "--extension-pkg-whitelist=PySide6"
+      ]

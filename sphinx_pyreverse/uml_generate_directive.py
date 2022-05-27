@@ -8,7 +8,7 @@ First, Created on Oct 1, 2012, this file created on Oct 8, 2019
 
 import copy
 import os
-import subprocess
+import subprocess  # nosec
 import sys
 
 from docutils import nodes
@@ -34,7 +34,7 @@ except ImportError:  # pragma: no cover
 
 def subproc_wrapper(*args, **kwargs):  # pragma: no cover
     """A shim which allows mocking of the subproc call when using pytest"""
-    subprocess.check_output(*args, **kwargs)
+    subprocess.check_output(*args, **kwargs)  # nosec
 
 
 class UMLGenerateDirective(Directive):
@@ -130,9 +130,7 @@ class UMLGenerateDirective(Directive):
 
         if module_name not in self.generated_modules:
             cmd = self._build_command(module_name, env.config)
-            logging.getLogger(__name__).info(
-                f"sphinx-pyreverse: Running: {' '.join(cmd)}"
-            )
+            logging.getLogger(__name__).info(f"sphinx-pyreverse: Running: {' '.join(cmd)}")
 
             # Ensure we have the right paths available to the pyreverse subproc
             if "PYTHONPATH" in os.environ:
@@ -161,16 +159,12 @@ class UMLGenerateDirective(Directive):
             # need to split on " " because the command has already been changed from arg[key] = ["A", "B"]
             # to arg[key] = "A B"
             for img_name in self.command_args["--class"].split(" "):
-                res.append(
-                    self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
-                )
+                res.append(self.generate_img(img_name, module_name, base_dir, src_dir, env.config))
         else:
             # whatever this was doing...
             for arg in self.arguments[2:]:
                 img_name = arg.strip(":")
-                res.append(
-                    self.generate_img(img_name, module_name, base_dir, src_dir, env.config)
-                )
+                res.append(self.generate_img(img_name, module_name, base_dir, src_dir, env.config))
 
         return res
 
@@ -185,9 +179,7 @@ class UMLGenerateDirective(Directive):
 
     def generate_img(self, img_name, module_name, base_dir, src_dir, config):
         """Resizes the image and returns a Sphinx image"""
-        uri, output_file = self.get_paths(
-            img_name, module_name, base_dir, src_dir, config
-        )
+        uri, output_file = self.get_paths(img_name, module_name, base_dir, src_dir, config)
         scale = 100
         max_width = 1000
         if IMAGE:
@@ -196,7 +188,5 @@ class UMLGenerateDirective(Directive):
             if image_width > max_width:
                 scale = max_width * scale / image_width
         else:
-            logging.getLogger(__name__).warning(
-                "sphinx-pyreverse: No image manipulation lib found!"
-            )
+            logging.getLogger(__name__).warning("sphinx-pyreverse: No image manipulation lib found!")
         return nodes.image(uri=uri, scale=scale)

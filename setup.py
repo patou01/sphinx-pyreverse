@@ -27,9 +27,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Utilities",
     ],
-    description=(
-        "A simple sphinx extension to generate " "UML diagrams with pyreverse"
-    ),
+    description=("A simple sphinx extension to generate " "UML diagrams with pyreverse"),
     extras_require={
         "deploy": [
             # deps for deploying

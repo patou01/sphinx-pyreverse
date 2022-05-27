@@ -62,9 +62,7 @@ class TestUMLGenerateDirectiveBase:
 
     @pytest.fixture(autouse=True)
     def mocksub(self):
-        with mock.patch.object(
-            sphinx_pyreverse.uml_generate_directive, "subproc_wrapper"
-        ) as mocksub:
+        with mock.patch.object(sphinx_pyreverse.uml_generate_directive, "subproc_wrapper") as mocksub:
             yield mocksub
 
     def gen(self):
@@ -97,9 +95,7 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         """simply invokes run with the default setup parameters"""
         instance = self.gen()
         assert not instance.generated_modules
-        with mock.patch.dict(
-            os.environ, {"TEST ENV VARIABLE": "test value"}, clear=True
-        ):
+        with mock.patch.dict(os.environ, {"TEST ENV VARIABLE": "test value"}, clear=True):
             instance.run()
         assert mocksub.call_count == 1
         called_with = mocksub.call_args_list
@@ -115,12 +111,8 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         # check that the env is modified so the pyreverse step is able to find
         # the module it want to diagram
         keyword_args = called_with[0][1]
-        assert (
-            "TEST ENV VARIABLE" in keyword_args["env"]
-        ), "We expect the env to be preserved"
-        assert (
-            "PYTHONPATH" in keyword_args["env"]
-        ), "We expect PYTHONPATH to have been added"
+        assert "TEST ENV VARIABLE" in keyword_args["env"], "We expect the env to be preserved"
+        assert "PYTHONPATH" in keyword_args["env"], "We expect PYTHONPATH to have been added"
         assert keyword_args["env"] == {
             "PYTHONPATH": ":".join(sys.path),
             "TEST ENV VARIABLE": "test value",
@@ -149,16 +141,12 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         # check that the env is NOT modified so the pyreverse step is able to find
         # the module it want to diagram
         keyword_args = called_with[0][1]
-        assert (
-            "PYTHONPATH" in keyword_args["env"]
-        ), "We expect also expect PYTHONPATH to have been preserved"
+        assert "PYTHONPATH" in keyword_args["env"], "We expect also expect PYTHONPATH to have been preserved"
         assert keyword_args["env"] == {
             "PYTHONPATH": "test path",
             "TEST ENV VARIABLE": "test value",
         }
-        assert (
-            "TEST ENV VARIABLE" in keyword_args["env"]
-        ), "We expect the env to be preserved"
+        assert "TEST ENV VARIABLE" in keyword_args["env"], "We expect the env to be preserved"
 
     def test_uml_dir_creation(self, tmpdir):
         """test that the uml directory is created under the right circumstances
@@ -170,9 +158,7 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         except NameError:
             # In python2 we need to define this built-in, but must ignore it on
             # python3's flake8
-            FileNotFoundError = (  # noqa: F823,E501 pylint: disable=redefined-builtin,invalid-name
-                OSError
-            )
+            FileNotFoundError = OSError  # noqa: F823,E501 pylint: disable=redefined-builtin,invalid-name
         instance = self.gen()
         mock_dir = tmpdir / "noexist.dir"
         instance.state.document.settings.env.srcdir = mock_dir
@@ -191,9 +177,7 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         try:
             instance.run()
         except FileNotFoundError as err:  # pragma: no cover
-            raise RuntimeError(
-                "sphinx_pyreverse should have created a single directory"
-            ) from err
+            raise RuntimeError("sphinx_pyreverse should have created a single directory") from err
         assert os.path.exists(mock_dir)
 
     def test_generate_same_twice(self):
@@ -235,9 +219,7 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
                 actual_width = mock_module.open("noexist").size[0]
                 assert actual_width == width_under_test
                 res = instance.run()
-                assert (
-                    res[0]["scale"] == expected_scale
-                ), f"Failed for {width_under_test}"
+                assert res[0]["scale"] == expected_scale, f"Failed for {width_under_test}"
 
     def test_generate_img_no_pil(self):
         """ensure we handle not have the PIL library gracefully
@@ -298,16 +280,12 @@ class TestUMLGenerateDirective(TestUMLGenerateDirectiveBase):
         assert config.sphinx_pyreverse_module_names == "y"
         assert config.sphinx_pyreverse_ignore == "noexist.py,secondnoeexist.py"
 
-        instance._build_command(  # pylint: disable=protected-access
-            "test_module", config=config
-        )
+        instance._build_command("test_module", config=config)  # pylint: disable=protected-access
 
         # disables --filter option, so run separately
         config.sphinx_pyreverse_only_classnames = True
         assert config.sphinx_pyreverse_only_classnames
-        instance._build_command(  # pylint: disable=protected-access
-            "test_module", config=config
-        )
+        instance._build_command("test_module", config=config)  # pylint: disable=protected-access
 
 
 class TestLogFixture(TestUMLGenerateDirectiveBase):

@@ -75,8 +75,8 @@ To use it run your ``sphinx-build`` command with ``-v -v -v -w $(pwd)/sphinx.log
 
 For more information see:
 
-  * `-v switch`_ 
-  * `-w switch`_ 
+  * `-v switch`_
+  * `-w switch`_
 
 
 .. _-v switch: https://www.sphinx-doc.org/en/master/man/sphinx-build.html#cmdoption-sphinx-build-v
