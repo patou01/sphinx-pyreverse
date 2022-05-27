@@ -51,6 +51,7 @@ repos:
     args:
       [
         "-rn", # Only display messages
+        "--ignore-paths=test/",
         "--ignore=setup.py",
         "--max-line-length=110",
         "--good-names=d,i,n,p,ui,up",

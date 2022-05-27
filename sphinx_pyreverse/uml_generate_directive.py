@@ -62,11 +62,12 @@ class UMLGenerateDirective(Directive):
             if val:
                 self.command_args[key] = " ".join(val)
 
-    def _rst_to_cmd_arg(self, name):
+    @staticmethod
+    def _rst_to_cmd_arg(name):
         if name == "classes":
             return "--class"
-        else:
-            return f"--{name}"
+
+        return f"--{name}"
 
     def _get_command_args_from_config(self, config):
         self.command_args = {}
@@ -98,11 +99,11 @@ class UMLGenerateDirective(Directive):
             module_name,
         ]
 
-        for key in self.command_args:
+        for key, value in self.command_args.items():
             if key in ["--all-ancestors", "--all-associated", "--show-builtin", "--only-classnames"]:
                 cmd.append(key)
             else:
-                cmd.extend([key, self.command_args[key]])
+                cmd.extend([key, value])
 
         # finally append the module to generate the uml for
         cmd.append(module_name)
