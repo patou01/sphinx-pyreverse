@@ -4,9 +4,9 @@ Sphinx-pyreverse
 **Note: This is not what you will get by doing pip install sphinx-pyreverse.** This has been forked. And for now there
 are no plans of merging back.
 
-** No tests are run on this code. I modified decently large amounts to suit my need for one project and do not care
+**No tests are run on this code. I modified decently large amounts to suit my need for one project and do not care
 about other uses. If you find a bug or have a question, feel free to ask! If there seems to be interest in this package
-I might write some proper doc and tests **
+I might write some proper doc and tests**
 
 A simple sphinx extension to generate a UML diagram from python modules.
 
@@ -41,8 +41,9 @@ It should support the standard arguments from pyreverse, but I honestly haven't 
         :all-ancestors:
 
 And that should run and give you what you're after...
-** Note: depending on your basic config, it will not override nor detect conflict situations. For instance if you put
-`all-ancestors` in the default and then add `show-ancestors` in the call to uml, you will get a command containing both **
+
+**Note: depending on your basic config, it will not override nor detect conflict situations. For instance if you put
+``all-ancestors`` in the default and then add ``show-ancestors`` in the call to uml, you will get a command containing both**
 
 Options
 ^^^^^^^
